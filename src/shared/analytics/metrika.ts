@@ -56,7 +56,7 @@ export function metrikaHit(url: string, referrer: string): void {
 export const FORM_GOAL = 'forma'
 
 /**
- * Цель «Копирование почты»: нажатие на адрес zakaz@traer.ru или на значок
+ * Цель «Копирование почты»: нажатие на адрес zakaz@prorelsa.ru или на значок
  * копирования рядом с ним — в шапке, подвале, на главной и в «Контактах».
  */
 export const EMAIL_COPY_GOAL = 'pochta'

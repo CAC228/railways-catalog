@@ -10,7 +10,7 @@ export function HomeContacts() {
   // звонок — по значку телефона слева.
   const phoneMain = useCopy('+7 (843) 227-00-05')
   const phoneSales = useCopy('+7 (965) 615-50-59')
-  const email = useCopy('zakaz@traer.ru', emailCopyGoal('Главная, блок контактов'))
+  const email = useCopy('zakaz@prorelsa.ru', emailCopyGoal('Главная, блок контактов'))
   return (
     <section className="border-t border-border bg-muted py-12 md:py-16">
       <div className="container mx-auto grid gap-8 px-6 md:grid-cols-2 xl:px-8">
@@ -61,7 +61,7 @@ export function HomeContacts() {
           <div className="flex items-center gap-3 text-lg">
             <FiMail className="shrink-0 text-primary" />
             <CopyValue state={email} label={COPY_EMAIL} className="hover:text-primary">
-              zakaz@traer.ru
+              zakaz@prorelsa.ru
             </CopyValue>
             <CopyButton compact state={email} label={COPY_EMAIL} />
           </div>

@@ -6,7 +6,7 @@ import { MessengerLinks } from '@/shared/ui/MessengerLinks'
 import { useCopy } from '@/shared/ui/use-copy'
 import { emailCopyGoal } from '@/shared/analytics/metrika'
 
-const EMAIL = 'zakaz@traer.ru'
+const EMAIL = 'zakaz@prorelsa.ru'
 const COPY_EMAIL = 'Скопировать адрес почты'
 // В шапке виден мобильный (на нём и мессенджеры), городской — в списке под ним.
 const PHONE_MOBILE = '+7 (965) 615-50-59'

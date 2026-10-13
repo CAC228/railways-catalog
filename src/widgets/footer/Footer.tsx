@@ -20,7 +20,7 @@ const COPY_PHONE = 'Скопировать номер телефона'
 export function Footer() {
   const { categories, isLoading } = useCategories()
   const [callbackOpen, setCallbackOpen] = useState(false)
-  const email = useCopy('zakaz@traer.ru', emailCopyGoal('Подвал'))
+  const email = useCopy('zakaz@prorelsa.ru', emailCopyGoal('Подвал'))
   const phoneMain = useCopy('+7 (843) 227-00-05')
   const phoneSales = useCopy('+7 (965) 615-50-59')
   return (
@@ -83,7 +83,7 @@ export function Footer() {
                   label="Скопировать адрес почты"
                   className="footer-muted"
                 >
-                  zakaz@traer.ru
+                  zakaz@prorelsa.ru
                 </CopyValue>
                 <CopyButton state={email} compact label="Скопировать адрес почты" />
               </div>

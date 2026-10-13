@@ -100,7 +100,7 @@ test('the retired tatrels.ru origin becomes traer.ru in canonical and social lin
   const home = getMetadata('/', { url: '/', siteUrl: siteOrigin('https://tatrels.ru'), status: 200, ssr: true })
   const organization = home.jsonLd.find((item) => item['@type'] === 'Organization')
   assert.equal(organization.url, 'https://traer.ru')
-  assert.equal(organization.email, 'zakaz@traer.ru')
+  assert.equal(organization.email, 'zakaz@prorelsa.ru')
   assert.deepEqual([organization.name, organization.alternateName, organization.legalName, organization.taxID], ['ИНВИА', undefined, 'ООО «ИНВИА»', '1648052000'], 'brand and legal entity are tied together')
   assert.equal(meta.jsonLd[0].provider.legalName, 'ООО «ИНВИА»')
   assert.ok(!JSON.stringify(home).includes('tatrels'))

@@ -223,10 +223,10 @@ export function PrivacyPage() {
                         Email для запросов по ПД
                       </p>
                       <a
-                        href="mailto:zakaz@traer.ru"
+                        href="mailto:zakaz@prorelsa.ru"
                         className="text-sm text-primary hover:underline"
                       >
-                        zakaz@traer.ru
+                        zakaz@prorelsa.ru
                       </a>
                     </div>
                   </div>
@@ -617,10 +617,10 @@ export function PrivacyPage() {
                   <span className="font-semibold">Способ реализации прав:</span>{" "}
                   направить запрос на{" "}
                   <a
-                    href="mailto:zakaz@traer.ru"
+                    href="mailto:zakaz@prorelsa.ru"
                     className="text-primary hover:underline font-semibold"
                   >
-                    zakaz@traer.ru
+                    zakaz@prorelsa.ru
                   </a>{" "}
                   или по почтовому адресу: 422540, г. Зеленодольск, а/я 34.
                 </p>
@@ -653,10 +653,10 @@ export function PrivacyPage() {
                     <strong className="text-foreground">отозвано</strong> в
                     любой момент путём направления заявления на{" "}
                     <a
-                      href="mailto:zakaz@traer.ru"
+                      href="mailto:zakaz@prorelsa.ru"
                       className="text-primary hover:underline"
                     >
-                      zakaz@traer.ru
+                      zakaz@prorelsa.ru
                     </a>
                     .
                   </span>
@@ -837,10 +837,10 @@ export function PrivacyPage() {
                   <span>
                     Актуальная версия Политики всегда доступна по адресу:{" "}
                     <a
-                      href="https://traer.ru/privacy"
+                      href="https://prorelsa.ru/privacy"
                       className="text-primary hover:underline"
                     >
-                      https://traer.ru/privacy
+                      https://prorelsa.ru/privacy
                     </a>
                   </span>
                 </li>
@@ -865,14 +865,14 @@ export function PrivacyPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <a
-                  href="mailto:zakaz@traer.ru"
+                  href="mailto:zakaz@prorelsa.ru"
                   className="flex items-center gap-3 p-4 rounded-lg bg-muted/30 border border-border hover:border-primary/50 transition-colors"
                 >
                   <FiMail className="h-5 w-5 text-primary shrink-0" />
                   <div>
                     <p className="text-xs text-muted-foreground">Email</p>
                     <p className="text-sm font-semibold text-foreground">
-                      zakaz@traer.ru
+                      zakaz@prorelsa.ru
                     </p>
                   </div>
                 </a>
