@@ -40,8 +40,8 @@ const CONTACTS = [
     id: 'email',
     icon: FiMail,
     title: 'Email',
-    value: 'zakaz@traer.ru',
-    copy: { value: 'zakaz@traer.ru', label: 'Скопировать адрес почты', goal: emailCopyGoal('Страница «Контакты»') },
+    value: 'zakaz@prorelsa.ru',
+    copy: { value: 'zakaz@prorelsa.ru', label: 'Скопировать адрес почты', goal: emailCopyGoal('Страница «Контакты»') },
   },
   {
     id: 'work-hours',
