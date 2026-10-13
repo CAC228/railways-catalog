@@ -22,6 +22,7 @@ export function onRenderHtml(pageContext: PageContextServer) {
       <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta name="theme-color" content="#1c1f22" /><link rel="icon" href="/favicon.ico?v=2026-10-09" sizes="32x32" /><link rel="icon" href="/favicon.svg?v=2026-10-09" type="image/svg+xml" /><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2026-10-09" />
       <meta name="google-site-verification" content="Gb-69uubJew9MOxsK3Cl-z5IAMLNVpHmYKjMNE-o-bI" />
+      <meta name="google-site-verification" content="f-ZuXpPViE8132C3rBaGD-G1fxgUyyVxv92Qnz4SGDk" />
       <title>${meta.title}</title><meta name="description" content="${meta.description}" />
       <meta name="robots" content="${meta.robots}" /><link rel="canonical" href="${meta.canonical}" />
       <meta property="og:type" content="website" /><meta property="og:site_name" content="ИНВИА" /><meta property="og:locale" content="ru_RU" />
