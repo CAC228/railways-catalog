@@ -5,17 +5,14 @@ import { CopyButton, CopyValue } from '@/shared/ui/CopyButton'
 import { MessengerLinks } from '@/shared/ui/MessengerLinks'
 import { useCopy } from '@/shared/ui/use-copy'
 import { emailCopyGoal } from '@/shared/analytics/metrika'
+import { PHONE_CALL, PHONE_CITY, PHONE_MOBILE, tel } from '@/shared/lib/phones'
 
 const EMAIL = 'zakaz@prorelsa.ru'
 const COPY_EMAIL = 'Скопировать адрес почты'
 // В шапке виден мобильный (на нём и мессенджеры), городской — в списке под ним.
-const PHONE_MOBILE = '+7 (965) 615-50-59'
-const PHONE_CITY = '+7 (843) 227-00-05'
 const COPY_PHONE = 'Скопировать номер телефона'
 // Мышь успевает дойти от номера до списка по диагонали — список закрывается не сразу.
 const CLOSE_DELAY = 200
-
-const tel = (phone: string) => `tel:+${phone.replace(/\D/g, '')}`
 
 /** Строка списка: трубка звонит, номер и значок копируют — как в блоке контактов на главной. */
 function PanelPhone({ phone }: { phone: string }) {
@@ -100,9 +97,9 @@ export function HeaderContacts({ onRequestCall }: { onRequestCall: () => void })
       </div>
       {/* На телефоне — значок звонка, оба номера есть в меню. */}
       <a
-        href={tel(PHONE_CITY)}
+        href={tel(PHONE_CALL)}
         className="flex h-11 items-center rounded-lg px-2 hover:opacity-75 md:hidden"
-        aria-label={`Позвонить: ${PHONE_CITY}`}
+        aria-label={`Позвонить: ${PHONE_CALL}`}
       >
         <FiPhone className="h-5 w-5" />
       </a>
@@ -135,8 +132,15 @@ export function HeaderContacts({ onRequestCall }: { onRequestCall: () => void })
                 <MessengerLinks compact />
               </div>
               <div className="my-4 border-t border-border" />
-              <PanelLabel>Городской</PanelLabel>
-              <PanelPhone phone={PHONE_CITY} />
+              {/* Пока городского нет, на его месте пусто — того же размера. */}
+              {PHONE_CITY ? (
+                <>
+                  <PanelLabel>Городской</PanelLabel>
+                  <PanelPhone phone={PHONE_CITY} />
+                </>
+              ) : (
+                <div className="h-[3.125rem]" aria-hidden="true" />
+              )}
               <div className="my-4 border-t border-border" />
               <p className="flex items-center gap-2 text-sm text-muted-foreground">
                 <FiClock className="shrink-0 text-primary" aria-hidden="true" />

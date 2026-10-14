@@ -6,7 +6,7 @@ import { isStarogodnySection, productGroup, TIER_NAMES, tierVolumes, type Produc
  * одна функция кормит и видимый блок, и разметку FAQPage, поэтому они не расходятся.
  * Каждое утверждение — из фактов сайта (плашка «Наличие», блок ступеней, /delivery).
  * Нельзя: предоплата 100 % (в карточке «Условия оплаты обсуждаются»), телефоны
- * (их подменяет коллтрекинг), сроки и скидки, которых нет на сайте.
+ * (они меняются), сроки и скидки, которых нет на сайте.
  */
 export type FaqItem = { question: string; answer: string; link?: { href: string; label: string } }
 

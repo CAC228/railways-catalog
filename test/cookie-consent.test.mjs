@@ -1,8 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFile } from 'node:fs/promises'
+import { readFile, readdir } from 'node:fs/promises'
 import ts from 'typescript'
-import { COOKIE_CONSENT_KEY, getCookieConsent, parseCookieConsent, saveCookieConsent, optionalTrackingAllowed, subscribeCookieConsent } from '../src/shared/privacy/cookie-consent.ts'
+import { COOKIE_CONSENT_KEY, getCookieConsent, parseCookieConsent, saveCookieConsent, subscribeCookieConsent } from '../src/shared/privacy/cookie-consent.ts'
 
 test('consent requires a valid explicit choice and expires after one year', () => {
   const now = 1800000000000
@@ -12,10 +12,18 @@ test('consent requires a valid explicit choice and expires after one year', () =
   for (const raw of [null, 'bad', '{}', JSON.stringify({ version: 1, choice: 'accepted', savedAt: now - 365 * 86400000 }), JSON.stringify({ version: 1, choice: 'accepted', savedAt: now + 1 }), JSON.stringify({ version: 2, choice: 'accepted', savedAt: now })]) {
     assert.equal(parseCookieConsent(raw, now), null)
   }
-  assert.equal(getCookieConsent(), null, 'SSR never starts optional tracking')
+  assert.equal(getCookieConsent(), null, 'SSR has no saved choice')
 })
 
-test('metrika works without consent, call tracking waits for it and stops after refusal', async t => {
+test('call tracking is gone from the site', async () => {
+  const files = await readdir(new URL('../src', import.meta.url), { recursive: true })
+  for (const file of files.filter(name => /\.(ts|tsx)$/.test(name))) {
+    const source = await readFile(new URL(`../src/${file.replaceAll('\\', '/')}`, import.meta.url), 'utf8')
+    assert.doesNotMatch(source, /gudok/i, file)
+  }
+})
+
+test('metrika works for every visitor except admin, the banner choice is remembered', async t => {
   const storage = new Map()
   const scripts = new Map()
   const calls = []
@@ -28,19 +36,12 @@ test('metrika works without consent, call tracking waits for it and stops after 
   globalThis.location = window.location
   globalThis.document = { referrer: '', getElementById: id => scripts.get(id), createElement: () => ({}), head: { append: script => scripts.set(script.id, script) } }
   t.after(() => { Object.assign(globalThis, old) })
-  async function load(name) {
-    const source = (await readFile(new URL(`../src/shared/analytics/${name}.ts`, import.meta.url), 'utf8'))
-      .replaceAll('import.meta.env', '({ PROD: true, VITE_METRIKA_ID: "123456, 654321" })')
-      .replaceAll("'../privacy/cookie-consent'", JSON.stringify(new URL('../src/shared/privacy/cookie-consent.ts', import.meta.url).href))
-    const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText
-    return import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`)
-  }
-  const metrika = await load('metrika')
-  const gudok = await load('gudok')
-  // Метрика — у всех посетителей сразу, коллтрекинг — только после «Принять все».
+  const source = (await readFile(new URL('../src/shared/analytics/metrika.ts', import.meta.url), 'utf8'))
+    .replaceAll('import.meta.env', '({ PROD: true, VITE_METRIKA_ID: "123456, 654321" })')
+  const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText
+  const metrika = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`)
   assert.equal(metrika.startMetrika(), true)
   assert.equal(metrika.startMetrika(), false)
-  gudok.startGudok()
   assert.deepEqual([...scripts.keys()], ['metrika-script'])
   assert.deepEqual(calls.filter(call => call[1] === 'init').map(call => call[0]), [123456, 654321], 'every counter is initialized')
   metrika.metrikaReachGoal('forma')
@@ -53,30 +54,19 @@ test('metrika works without consent, call tracking waits for it and stops after 
   window.location.pathname = '/'
   let changes = 0
   const unsubscribe = subscribeCookieConsent(() => changes++)
-  saveCookieConsent('necessary')
-  gudok.startGudok()
-  assert.equal(scripts.size, 1)
   saveCookieConsent('accepted')
-  gudok.startGudok(); gudok.startGudok()
-  assert.equal(scripts.size, 2)
   assert.equal(getCookieConsent(), 'accepted')
-  saveCookieConsent('necessary')
   const count = calls.length
   metrika.metrikaReachGoal('forma'); metrika.metrikaHit('/catalog', '/')
-  assert.equal(calls.length, count + 4, 'refusing call tracking keeps metrika')
+  assert.equal(calls.length, count + 4)
   window.location.pathname = '/admin/login'
   metrika.metrikaReachGoal('forma'); metrika.metrikaHit('/admin', '/')
   assert.equal(calls.length, count + 4, 'admin pages are not tracked')
   window.location.pathname = '/'
-  assert.equal(changes, 3)
+  assert.equal(changes, 1)
   unsubscribe()
-  saveCookieConsent('accepted')
-  window.location.pathname = '/admin/login'
-  assert.equal(optionalTrackingAllowed(), false)
-  window.location.pathname = '/'
   window.localStorage.setItem = () => { throw new Error('storage blocked') }
-  saveCookieConsent('necessary')
-  assert.equal(getCookieConsent(), 'necessary', 'choice works in memory if writes are blocked')
-  assert.equal(optionalTrackingAllowed(), false)
+  saveCookieConsent('accepted')
+  assert.equal(getCookieConsent(), 'accepted', 'choice works in memory if writes are blocked')
   assert.ok(storage.has(COOKIE_CONSENT_KEY))
 })

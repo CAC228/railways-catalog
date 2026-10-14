@@ -1,4 +1,5 @@
 import { plainText } from '../lib/plain-text.ts'
+import { PHONE_CITY, PHONE_MOBILE } from '../lib/phones.ts'
 import { buildProductFaq } from '../lib/product-faq.ts'
 import { detailRoute, isKnownPath, productPath, type PageData } from './route-data.ts'
 import { catalogMeta, pageMeta, type MetaPair } from './meta-traer.ts'
@@ -88,7 +89,7 @@ export function getMetadata(urlValue: string, data: PageData, products: Record<s
     description = data.status >= 500 ? 'Не удалось загрузить данные. Повторите попытку позже.' : 'Каталог материалов и услуг ИНВИА.'
   }
   if (data.status >= 500) title = 'Страница временно недоступна | ИНВИА'
-  if (path === '/') jsonLd.push({ '@context': 'https://schema.org', ...company, url: data.siteUrl, logo: `${data.siteUrl}/logo.png`, telephone: ['+7-843-227-00-05', '+7-965-615-50-59'], email: 'zakaz@prorelsa.ru' })
+  if (path === '/') jsonLd.push({ '@context': 'https://schema.org', ...company, url: data.siteUrl, logo: `${data.siteUrl}/logo.png`, telephone: [PHONE_CITY, PHONE_MOBILE].filter(Boolean), email: 'zakaz@prorelsa.ru' })
   const socialDescription = summary(description)
   return { title, description: searchDescription || socialDescription, socialDescription, canonical: data.siteUrl + canonicalPath, robots: noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large', image, jsonLd }
 }

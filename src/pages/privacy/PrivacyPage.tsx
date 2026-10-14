@@ -9,7 +9,7 @@ import {
 import { Layout } from "@/widgets/Layout";
 import { Breadcrumbs } from "@/shared/ui/Breadcrumbs";
 import { Button } from "@/shared/ui/Button";
-import { openCookieSettings } from "@/shared/privacy/cookie-consent";
+import { PHONE_CALL, tel } from "@/shared/lib/phones";
 
 const sections = [
   { id: "general", number: "1", title: "Общие положения" },
@@ -208,10 +208,10 @@ export function PrivacyPage() {
                         Контактный телефон
                       </p>
                       <a
-                        href="tel:+78432270005"
+                        href={tel(PHONE_CALL)}
                         className="text-sm text-primary hover:underline"
                       >
-                        +7 (843) 227-00-05
+                        {PHONE_CALL}
                       </a>
                     </div>
                   </div>
@@ -797,12 +797,10 @@ export function PrivacyPage() {
               <div id="cookies" className="mt-6 scroll-mt-24 rounded-lg border border-border bg-muted/30 p-4 sm:p-5">
                 <h3 className="text-lg font-bold">Cookies и аналитика</h3>
                 <div className="mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground">
-                  <p>Необходимое хранилище браузера используется для корзины, входа в личный кабинет и сохранения настроек. Эти функции работают независимо от согласия на коллтрекинг.</p>
+                  <p>Необходимое хранилище браузера используется для корзины, входа в личный кабинет и сохранения настроек.</p>
                   <p>Для анализа посещаемости на сайте у всех посетителей работает Яндекс Метрика. Она использует cookies и обрабатывает сведения о посещении сайта: адреса страниц, источник перехода, сведения об устройстве и браузере, действия на странице.</p>
-                  <p>Gudok для коллтрекинга подключается только после выбора «Принять все». При выборе «Без коллтрекинга» его скрипт не загружается.</p>
-                  <p>Выбор сохраняется в localStorage на один год. Его можно изменить в любой момент через «Настройки cookies» в подвале сайта. При отключении ранее разрешённого коллтрекинга страница перезагрузится без него. Удалить сохранённые cookies или запретить их можно в настройках браузера.</p>
+                  <p>Удалить сохранённые cookies или запретить их можно в настройках браузера.</p>
                 </div>
-                <Button type="button" variant="outline" size="sm" className="mt-4" onClick={openCookieSettings}>Настройки cookies</Button>
               </div>
             </section>
 
@@ -878,14 +876,14 @@ export function PrivacyPage() {
                 </a>
 
                 <a
-                  href="tel:+78432270005"
+                  href={tel(PHONE_CALL)}
                   className="flex items-center gap-3 p-4 rounded-lg bg-muted/30 border border-border hover:border-primary/50 transition-colors"
                 >
                   <FiPhone className="h-5 w-5 text-primary shrink-0" />
                   <div>
                     <p className="text-xs text-muted-foreground">Телефон</p>
                     <p className="text-sm font-semibold text-foreground">
-                      +7 (843) 227-00-05
+                      {PHONE_CALL}
                     </p>
                   </div>
                 </a>
