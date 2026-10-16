@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { FiChevronDown, FiClock, FiPhone } from 'react-icons/fi'
+import { Button } from '@/shared/ui/Button'
 import { CopyButton, CopyValue } from '@/shared/ui/CopyButton'
 import { MessengerLinks } from '@/shared/ui/MessengerLinks'
 import { useCopy } from '@/shared/ui/use-copy'
 import { emailCopyGoal } from '@/shared/analytics/metrika'
 import { PHONE_CALL, PHONE_CITY, PHONE_MOBILE, tel } from '@/shared/lib/phones'
-import { HeaderContactForm } from './HeaderContactForm'
 
 const EMAIL = 'zakaz@prorelsa.ru'
 const COPY_EMAIL = 'Скопировать адрес почты'
@@ -43,9 +43,8 @@ function PanelLabel({ children }: { children: React.ReactNode }) {
  * Почта и мобильный столбиком; под мобильным — список всех контактов.
  * Мышью список открывается наведением, нажатие на стрелку закрепляет его
  * (на планшете наведения нет — только стрелка). Esc и нажатие мимо закрывают.
- * Начали заполнять форму — список закрепляется, чтобы не закрылся, когда мышь уйдёт.
  */
-export function HeaderContacts() {
+export function HeaderContacts({ onRequestCall }: { onRequestCall: () => void }) {
   const [open, setOpen] = useState<false | 'hover' | 'click'>(false)
   const root = useRef<HTMLDivElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
@@ -125,14 +124,8 @@ export function HeaderContacts() {
         </div>
         {open && (
           // Отступ сверху — часть списка: мышь идёт от номера к списку, не выходя из блока.
-          <div
-            id="header-contacts-panel"
-            aria-label="Контакты"
-            className="absolute right-0 top-full z-50 pt-2"
-            onFocus={() => setOpen('click')}
-          >
-            {/* С формой список высокий: на невысоком экране он прокручивается, а не уходит за край. */}
-            <div className="panel-enter max-h-[calc(100vh-8rem)] w-76 overflow-y-auto overscroll-contain rounded-lg border border-border bg-white p-5 text-left text-foreground shadow-lg">
+          <div id="header-contacts-panel" aria-label="Контакты" className="absolute right-0 top-full z-50 pt-2">
+            <div className="panel-enter w-76 rounded-lg border border-border bg-white p-5 text-left text-foreground shadow-lg">
               <PanelLabel>Мобильный и мессенджеры</PanelLabel>
               <PanelPhone phone={PHONE_MOBILE} />
               <div className="mt-3">
@@ -153,10 +146,17 @@ export function HeaderContacts() {
                 <FiClock className="shrink-0 text-primary" aria-hidden="true" />
                 Пн–Пт, 8:00–17:00
               </p>
-              <div className="my-4 border-t border-border" />
-              <HeaderContactForm />
-              <div className="my-4 border-t border-border" />
-              <p className="text-sm text-muted-foreground">Наша почта:</p>
+              <Button
+                className="mt-3 w-full flex-col gap-0! leading-tight"
+                onClick={() => {
+                  setOpen(false)
+                  onRequestCall()
+                }}
+              >
+                Заказать звонок
+                <span className="text-xs font-medium opacity-90">перезвоним за 15 мин</span>
+              </Button>
+              <p className="mt-4 text-sm text-muted-foreground">Наша почта:</p>
               <div className="mt-1 flex items-center gap-2 font-bold">
                 <CopyValue state={panelEmail} label={COPY_EMAIL} className="hover:text-primary">
                   {EMAIL}

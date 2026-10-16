@@ -125,7 +125,7 @@ export function Header() {
           </div>
           {/* Почта и мобильный столбиком по 24 px — влезает и в сжатую шапку;
               городской и остальное — в списке под мобильным. */}
-          <HeaderContacts />
+          <HeaderContacts onRequestCall={() => setRequestOpen(true)} />
           <Link
             to="/cart"
             aria-label={`Корзина${totalItems ? `, товаров: ${totalItems}` : ''}`}
