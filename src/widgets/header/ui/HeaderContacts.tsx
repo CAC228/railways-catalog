@@ -149,14 +149,13 @@ export function HeaderContacts() {
                 Пн–Пт, 8:00–17:00
               </p>
               <Button
-                className="mt-3 w-full flex-col gap-0! leading-tight"
+                className="mt-3 w-full"
                 onClick={() => {
                   setOpen(false)
                   setContactMe(true)
                 }}
               >
                 Свяжитесь со мной
-                <span className="text-xs font-medium opacity-90">перезвоним за 15 мин</span>
               </Button>
               <p className="mt-4 text-sm text-muted-foreground">Наша почта:</p>
               <div className="mt-1 flex items-center gap-2 font-bold">
