@@ -6,6 +6,7 @@ import { MessengerLinks } from '@/shared/ui/MessengerLinks'
 import { useCopy } from '@/shared/ui/use-copy'
 import { emailCopyGoal } from '@/shared/analytics/metrika'
 import { PHONE_CALL, PHONE_CITY, PHONE_MOBILE, tel } from '@/shared/lib/phones'
+import { ContactMeModal } from './ContactMeModal'
 
 const EMAIL = 'zakaz@prorelsa.ru'
 const COPY_EMAIL = 'Скопировать адрес почты'
@@ -44,8 +45,9 @@ function PanelLabel({ children }: { children: React.ReactNode }) {
  * Мышью список открывается наведением, нажатие на стрелку закрепляет его
  * (на планшете наведения нет — только стрелка). Esc и нажатие мимо закрывают.
  */
-export function HeaderContacts({ onRequestCall }: { onRequestCall: () => void }) {
+export function HeaderContacts() {
   const [open, setOpen] = useState<false | 'hover' | 'click'>(false)
+  const [contactMe, setContactMe] = useState(false)
   const root = useRef<HTMLDivElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
   const closeTimer = useRef<number | undefined>(undefined)
@@ -147,14 +149,13 @@ export function HeaderContacts({ onRequestCall }: { onRequestCall: () => void })
                 Пн–Пт, 8:00–17:00
               </p>
               <Button
-                className="mt-3 w-full flex-col gap-0! leading-tight"
+                className="mt-3 w-full"
                 onClick={() => {
                   setOpen(false)
-                  onRequestCall()
+                  setContactMe(true)
                 }}
               >
-                Заказать звонок
-                <span className="text-xs font-medium opacity-90">перезвоним за 15 мин</span>
+                Свяжитесь со мной
               </Button>
               <p className="mt-4 text-sm text-muted-foreground">Наша почта:</p>
               <div className="mt-1 flex items-center gap-2 font-bold">
@@ -167,6 +168,7 @@ export function HeaderContacts({ onRequestCall }: { onRequestCall: () => void })
           </div>
         )}
       </div>
+      <ContactMeModal open={contactMe} onOpenChange={setContactMe} />
     </div>
   )
 }
