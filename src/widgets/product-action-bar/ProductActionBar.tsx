@@ -3,8 +3,10 @@ import { FiMessageCircle, FiPhone } from 'react-icons/fi'
 import { Button } from '@/shared/ui/Button'
 import { Dialog } from '@/shared/ui/Dialog'
 import { MessengerLinks } from '@/shared/ui/MessengerLinks'
+import { PHONE_CALL, tel } from '@/shared/lib/phones'
 
-const PHONE = '+7 (843) 227-00-05'
+// Городского пока нет — значок звонит на мобильный (src/shared/lib/phones.ts).
+const PHONE = PHONE_CALL
 
 const iconLink =
   'inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/50 text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
@@ -31,7 +33,7 @@ export function ProductActionBar({
         className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-white/95 px-3 pt-2 pb-[max(.5rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgb(28_31_34/0.08)] backdrop-blur lg:hidden"
       >
         <div className="mx-auto flex max-w-2xl items-center gap-2">
-          <a href="tel:+78432270005" aria-label={`Позвонить: ${PHONE}`} title={`Позвонить: ${PHONE}`} className={iconLink}>
+          <a href={tel(PHONE)} aria-label={`Позвонить: ${PHONE}`} title={`Позвонить: ${PHONE}`} className={iconLink}>
             <FiPhone className="h-5 w-5" aria-hidden="true" />
           </a>
           {/* На совсем узком экране (меньше 360 px) места нет — мессенджеры остаются в меню и подвале. */}

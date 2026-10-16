@@ -8,7 +8,7 @@ import { FiDownload, FiPhone } from 'react-icons/fi'
 import { useCategories } from '@/entities/category/model/hooks/useCategories'
 import { Button } from '@/shared/ui/Button'
 import { RequestFormModal } from '@/shared/ui/RequestFormModal'
-import { openCookieSettings } from '@/shared/privacy/cookie-consent'
+import { PHONE_CITY, PHONE_MOBILE } from '@/shared/lib/phones'
 import { catalogPath } from '@/shared/seo/route-data'
 const companyLinks = [
   ['Услуги', '/services'],
@@ -22,8 +22,8 @@ export function Footer() {
   const { categories, isLoading } = useCategories()
   const [callbackOpen, setCallbackOpen] = useState(false)
   const email = useCopy('zakaz@prorelsa.ru', emailCopyGoal('Подвал'))
-  const phoneMain = useCopy('+7 (843) 227-00-05')
-  const phoneSales = useCopy('+7 (965) 615-50-59')
+  const phoneMain = useCopy(PHONE_CITY)
+  const phoneSales = useCopy(PHONE_MOBILE)
   return (
     <footer className="site-footer">
       <div className="container mx-auto px-6 py-12 xl:px-8">
@@ -58,13 +58,14 @@ export function Footer() {
           <div>
             <h2 className="mb-4 text-base font-bold">Контакты</h2>
             <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2">
+              {/* Если городского нет, на его месте пусто — того же размера. */}
+              <div className={`flex items-center gap-2 ${PHONE_CITY ? '' : 'invisible'}`} aria-hidden={!PHONE_CITY || undefined}>
                 <CopyValue
                   state={phoneMain}
                   label={COPY_PHONE}
                   className="whitespace-nowrap text-base font-bold"
                 >
-                  +7 (843) 227-00-05
+                  {PHONE_CITY || PHONE_MOBILE}
                 </CopyValue>
                 <CopyButton state={phoneMain} compact label={COPY_PHONE} />
               </div>
@@ -74,7 +75,7 @@ export function Footer() {
                   label={COPY_PHONE}
                   className="footer-muted whitespace-nowrap"
                 >
-                  +7 (965) 615-50-59
+                  {PHONE_MOBILE}
                 </CopyValue>
                 <CopyButton state={phoneSales} compact label={COPY_PHONE} />
               </div>
@@ -142,7 +143,6 @@ export function Footer() {
           <div className="flex flex-wrap gap-x-6 gap-y-3">
             <Link to="/privacy">Политика конфиденциальности</Link>
             <a href="/privacy#consent">Согласие на обработку данных</a>
-            <button type="button" onClick={openCookieSettings} className="text-left hover:underline focus-visible:ring-2 focus-visible:ring-ring">Настройки cookies</button>
           </div>
         </div>
       </div>

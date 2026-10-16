@@ -1,7 +1,7 @@
+// 'necessary' — выбор «Без коллтрекинга» с прежней плашки: такие посетители уведомление уже видели.
 export type CookieChoice = 'accepted' | 'necessary'
 export const COOKIE_CONSENT_KEY = 'invia-cookie-consent-v1'
 export const COOKIE_CONSENT_EVENT = 'invia:cookie-consent'
-export const COOKIE_SETTINGS_EVENT = 'invia:cookie-settings'
 const MAX_AGE_MS = 365 * 24 * 60 * 60 * 1000
 let memoryChoice: CookieChoice | null = null
 let memoryOnly = false
@@ -42,12 +42,4 @@ export function subscribeCookieConsent(callback: () => void) {
     window.removeEventListener(COOKIE_CONSENT_EVENT, callback)
     window.removeEventListener('storage', onStorage)
   }
-}
-
-export function openCookieSettings() {
-  window.dispatchEvent(new Event(COOKIE_SETTINGS_EVENT))
-}
-
-export function optionalTrackingAllowed() {
-  return typeof window !== 'undefined' && !window.location.pathname.startsWith('/admin') && getCookieConsent() === 'accepted'
 }

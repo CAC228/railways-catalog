@@ -3,13 +3,14 @@ import { Link } from 'react-router'
 import { CopyButton, CopyValue } from '@/shared/ui/CopyButton'
 import { useCopy } from '@/shared/ui/use-copy'
 import { emailCopyGoal } from '@/shared/analytics/metrika'
+import { PHONE_CALL, PHONE_CITY, PHONE_MOBILE, tel } from '@/shared/lib/phones'
 const COPY_PHONE = 'Скопировать номер телефона'
 const COPY_EMAIL = 'Скопировать адрес почты'
 export function HomeContacts() {
   // Номера и почта копируются нажатием на текст или на значок рядом,
   // звонок — по значку телефона слева.
-  const phoneMain = useCopy('+7 (843) 227-00-05')
-  const phoneSales = useCopy('+7 (965) 615-50-59')
+  const phoneMain = useCopy(PHONE_CITY)
+  const phoneSales = useCopy(PHONE_MOBILE)
   const email = useCopy('zakaz@prorelsa.ru', emailCopyGoal('Главная, блок контактов'))
   return (
     <section className="border-t border-border bg-muted py-12 md:py-16">
@@ -22,10 +23,11 @@ export function HomeContacts() {
           </p>
         </div>
         <div className="space-y-4">
-          <div className="flex items-center gap-3 text-2xl font-bold tracking-tight sm:text-3xl">
+          {/* Если городского нет, на его месте пусто — того же размера. */}
+          <div className={`flex items-center gap-3 text-2xl font-bold tracking-tight sm:text-3xl ${PHONE_CITY ? '' : 'invisible'}`} aria-hidden={!PHONE_CITY || undefined}>
             <a
-              href="tel:+78432270005"
-              aria-label="Позвонить: +7 (843) 227-00-05"
+              href={PHONE_CITY ? tel(PHONE_CITY) : undefined}
+              aria-label={`Позвонить: ${PHONE_CITY}`}
               title="Позвонить"
               className="-m-1 shrink-0 rounded-md p-1 text-primary hover:bg-primary/10"
             >
@@ -36,14 +38,14 @@ export function HomeContacts() {
               label={COPY_PHONE}
               className="whitespace-nowrap hover:text-primary"
             >
-              +7 (843) 227-00-05
+              {PHONE_CITY || PHONE_MOBILE}
             </CopyValue>
             <CopyButton compact state={phoneMain} label={COPY_PHONE} />
           </div>
           <div className="flex items-center gap-3 text-lg font-bold">
             <a
-              href="tel:+79656155059"
-              aria-label="Позвонить: +7 (965) 615-50-59"
+              href={tel(PHONE_MOBILE)}
+              aria-label={`Позвонить: ${PHONE_MOBILE}`}
               title="Позвонить"
               className="-m-1 shrink-0 rounded-md p-1 text-primary hover:bg-primary/10"
             >
@@ -54,7 +56,7 @@ export function HomeContacts() {
               label={COPY_PHONE}
               className="whitespace-nowrap hover:text-primary"
             >
-              +7 (965) 615-50-59
+              {PHONE_MOBILE}
             </CopyValue>
             <CopyButton compact state={phoneSales} label={COPY_PHONE} />
           </div>
@@ -71,7 +73,7 @@ export function HomeContacts() {
           </p>
           <div className="flex flex-wrap gap-4">
             <a
-              href="tel:+78432270005"
+              href={tel(PHONE_CALL)}
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-accent px-5 font-bold text-accent-foreground md:hidden"
             >
               <FiPhone />
