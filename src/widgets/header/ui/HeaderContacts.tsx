@@ -117,7 +117,7 @@ export function HeaderContacts({ onRequestCall }: { onRequestCall: () => void })
             aria-label="Все телефоны и контакты"
             title="Все телефоны и контакты"
             onClick={() => setOpen((state) => (state === 'click' ? false : 'click'))}
-            className="inline-flex h-6 w-6 items-center justify-center rounded text-current/60 transition-colors hover:bg-current/10 hover:text-primary"
+            className="inline-flex h-6 w-6 items-center justify-center rounded text-primary transition-colors hover:bg-primary/10"
           >
             <FiChevronDown className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
           </button>
