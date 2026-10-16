@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { FiChevronDown } from 'react-icons/fi'
 import type { Category } from '@/entities/category'
 import { useCatalogSidebar } from '../model/use-catalog-sidebar'
+import { catalogPath } from '@/shared/seo/route-data'
 
 interface CatalogSidebarProps {
   activeCategory?: string
@@ -82,7 +83,7 @@ function SidebarCategory({
         }`}
       >
         <Link
-          to={`/catalog?category=${category.slug}`}
+          to={catalogPath(category.slug)}
           className={`flex-1 rounded-lg px-4 py-3 text-left font-medium transition-colors ${
             isActive
               ? 'text-[hsl(var(--primary))]'
@@ -121,7 +122,7 @@ function SidebarCategory({
               return (
                 <Link
                   key={subcategory.slug}
-                  to={`/catalog?category=${category.slug}&subcategory=${subcategory.slug}`}
+                  to={catalogPath(category.slug, subcategory.slug)}
                   className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
                     isSubActive
                       ? 'bg-[hsl(var(--primary))/0.1] font-medium text-[hsl(var(--primary))]'

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { ProductCard } from '@/entities/product/ui/ProductCard'
 import { usePopularProducts } from '../model/use-popular-products'
+import { catalogPath } from '@/shared/seo/route-data'
 const tabs = [
   ['Рельсы', 'zheleznodorozhnye-relsy'],
   ['Шпалы', 'zhd-shpaly'],
@@ -101,7 +102,7 @@ export function PopularProducts() {
         </div>
         <div className="mt-7 text-right">
           <Link
-            to={`/catalog?category=${tabs[active][1]}`}
+            to={catalogPath(tabs[active][1])}
             className="inline-flex min-h-11 items-center font-bold text-primary"
           >
             Все товары категории →

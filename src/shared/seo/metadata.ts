@@ -1,7 +1,7 @@
 import { plainText } from '../lib/plain-text.ts'
 import { PHONE_CITY, PHONE_MOBILE } from '../lib/phones.ts'
 import { buildProductFaq } from '../lib/product-faq.ts'
-import { detailRoute, isKnownPath, productPath, type PageData } from './route-data.ts'
+import { catalogPath, catalogSelection, detailRoute, isKnownPath, productPath, type PageData } from './route-data.ts'
 import { catalogMeta, pageMeta, type MetaPair } from './meta-traer.ts'
 
 export type Metadata = { title: string; description: string; socialDescription: string; canonical: string; robots: string; image: string; jsonLd: Record<string, unknown>[] }
@@ -28,9 +28,10 @@ export function getMetadata(urlValue: string, data: PageData, products: Record<s
   let image = `${data.siteUrl}/logo.png`
   let searchDescription = ''
   if (path.startsWith('/admin')) [title, description] = ['Управление сайтом | ИНВИА', 'Вход в панель управления ИНВИА.']
-  if (path === '/catalog') {
-    const category = data.categories?.find((item) => item.slug === url.searchParams.get('category'))
-    const subcategory = category?.subcategories?.find((item) => item.slug === url.searchParams.get('subcategory'))
+  const selection = catalogSelection(path)
+  if (selection) {
+    const category = data.categories?.find((item) => item.slug === selection.categorySlug)
+    const subcategory = category?.subcategories?.find((item) => item.slug === selection.subcategorySlug)
     const params = new URLSearchParams()
     if (category) {
       const label = subcategory?.name ?? category.name
@@ -38,9 +39,8 @@ export function getMetadata(urlValue: string, data: PageData, products: Record<s
         `${label}: купить, цена | ИНВИА`,
         subcategory ? `${label}: позиции каталога ИНВИА, ГОСТ и технические характеристики. Цена по запросу, доставка по России и СНГ.` : category.description,
       ]
-      params.set('category', category.slug)
-      if (subcategory) params.set('subcategory', subcategory.slug)
-    }
+      canonicalPath = catalogPath(category.slug, subcategory?.slug)
+    } else [title, description] = pageMeta['/catalog'] ?? [title, description]
     const page = Number(url.searchParams.get('page'))
     if (Number.isInteger(page) && page > 1) {
       params.set('page', String(page))
@@ -48,8 +48,9 @@ export function getMetadata(urlValue: string, data: PageData, products: Record<s
       description += ` Страница ${page}.`
     }
     canonicalPath += params.size ? `?${params}` : ''
-    noindex ||= [...url.searchParams.keys()].some((key) => !['category', 'subcategory', 'page', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].includes(key))
-    noindex ||= (!!url.searchParams.get('category') && !category) || (!!url.searchParams.get('subcategory') && !subcategory)
+    // Поиск, фильтры и сортировка (?search=, ?gost=, ?sort=…) — варианты раздела, а не страницы: в индекс не пускаем.
+    noindex ||= [...url.searchParams.keys()].some((key) => !['page', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].includes(key))
+    noindex ||= (!!selection.categorySlug && !category) || (!!selection.subcategorySlug && !subcategory)
     if (data.status === 404) [title, description] = notFound
   }
   const route = detailRoute(path)

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CarouselArrows } from '@/shared/ui/CarouselArrows'
 import { useCategories } from '@/entities/category/model/hooks/useCategories'
 import { normalizeText } from '@/shared/lib'
+import { catalogPath } from '@/shared/seo/route-data'
 
 const FASTENER_CATEGORY_NAME = 'крепежные элементы'
 
@@ -98,7 +99,7 @@ export function FastenersSection() {
                   className="min-w-0 flex-[0_0_75%] pl-3 sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] xl:flex-[0_0_20%]"
                 >
                   <motion.a
-                    href={`/catalog?category=${subcat.categorySlug}&subcategory=${subcat.slug}`}
+                    href={catalogPath(subcat.categorySlug, subcat.slug)}
                     initial={{ opacity: 0, y: 16 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
