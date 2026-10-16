@@ -1,4 +1,5 @@
 import { formatSpec } from './plain-text'
+import { catalogPath } from '../seo/route-data'
 import type { Product } from '../../entities/product/model/types'
 
 export interface BreadcrumbItem {
@@ -7,11 +8,7 @@ export interface BreadcrumbItem {
 }
 
 export function getCategoryUrl(categorySlug: string) {
-  const params = new URLSearchParams({
-    category: categorySlug,
-  })
-
-  return `/catalog?${params.toString()}`
+  return catalogPath(categorySlug)
 }
 
 
@@ -34,12 +31,7 @@ export function getSubcategoryUrl(
     categorySlug: string,
     subcategorySlug: string,
 ) {
-  const params = new URLSearchParams({
-    category: categorySlug,
-    subcategory: subcategorySlug,
-  })
-
-  return `/catalog?${params.toString()}`
+  return catalogPath(categorySlug, subcategorySlug)
 }
 
 
@@ -55,14 +47,14 @@ export function getProductBreadcrumbs(product: Product, categoryName: string, su
     },
     {
       label: categoryName,
-      href: `/catalog?category=${product.categorySlug}`,
+      href: catalogPath(product.categorySlug),
     },
   ]
 
   if (product.subcategorySlug && subcategoryName) {
     items.push({
       label: subcategoryName,
-      href: `/catalog?category=${product.categorySlug}&subcategory=${product.subcategorySlug}`,
+      href: catalogPath(product.categorySlug, product.subcategorySlug),
     })
   }
 
@@ -90,14 +82,14 @@ export function getCategoryBreadcrumbs(
     },
     {
       label: categoryName,
-      href: `/catalog?category=${categorySlug}`,
+      href: catalogPath(categorySlug),
     },
   ]
 
   if (subcategorySlug && subcategoryName) {
     items.push({
       label: subcategoryName,
-      href: `/catalog?category=${categorySlug}&subcategory=${subcategorySlug}`,
+      href: catalogPath(categorySlug, subcategorySlug),
     })
   }
 

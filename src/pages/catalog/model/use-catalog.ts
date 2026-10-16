@@ -7,7 +7,7 @@ import {
 import type { SortOption } from '@/entities/product/model/types'
 import type { PaginationMeta } from '@/shared/api'
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
 import { useCategoryData } from '@/shared/seo/page-context'
 
 type FilterCondition = 'new' | 'used' | 'service' | 'all'
@@ -27,7 +27,7 @@ export interface UseCatalogReturn {
   pagination: PaginationMeta
   loading: boolean
   error: string | null
-  handleFilterChange: (nextFilters: FilterState, category?: string) => void
+  handleFilterChange: (nextFilters: FilterState) => void
   handlePageChange: (page: number) => void
 }
 
@@ -50,8 +50,8 @@ export function useCatalog(): UseCatalogReturn {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const categorySlug = searchParams.get('category') ?? undefined
-  const subcategorySlug = searchParams.get('subcategory') ?? undefined
+  // Раздел и категория — в пути (/catalog/<раздел>/<категория>), фильтры и страница — в параметрах.
+  const { categorySlug, subcategorySlug } = useParams()
   const page = parseInt(searchParams.get('page') ?? '1', 10)
   const limit = parseInt(searchParams.get('limit') ?? '20', 10)
   const search = searchParams.get('search') ?? ''
@@ -152,15 +152,10 @@ export function useCatalog(): UseCatalogReturn {
     attributeFilters,
   ])
 
-  const handleFilterChange = (nextFilters: FilterState, category?: string) => {
+  const handleFilterChange = (nextFilters: FilterState) => {
     const params = new URLSearchParams(searchParams)
 
     params.set('page', '1')
-    if (category !== undefined && category !== (categorySlug ?? '')) {
-      if (category) params.set('category', category)
-      else params.delete('category')
-      params.delete('subcategory')
-    }
     for (const key of ['gost', 'priceMin', 'priceMax'] as const) {
       if (nextFilters[key].trim()) params.set(key, nextFilters[key].trim())
       else params.delete(key)

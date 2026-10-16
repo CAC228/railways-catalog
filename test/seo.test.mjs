@@ -5,7 +5,7 @@ import { getMetadata } from '../src/shared/seo/metadata.ts'
 import { pageMeta, catalogMeta } from '../src/shared/seo/meta-traer.ts'
 import { productMeta } from '../src/shared/seo/meta-tovary.ts'
 import { buildProductFaq } from '../src/shared/lib/product-faq.ts'
-import { detailRoute, productPath, rendersOnServer, isUnknownCatalogSelection } from '../src/shared/seo/route-data.ts'
+import { detailRoute, productPath, rendersOnServer, isUnknownCatalogSelection, catalogPath, catalogSelection, legacyCatalogRedirect, isKnownPath } from '../src/shared/seo/route-data.ts'
 import { siteOrigin, hostRedirect, publicRequestUrl } from '../src/renderer/site-origin.ts'
 import { apiOriginList, fetchFromApi } from '../src/renderer/api-fetch.ts'
 
@@ -68,10 +68,39 @@ test('empty search text falls back to generated metadata and markup becomes plai
 })
 test('category pagination has its own canonical; filter variants remain out of the index', () => {
   const data = { url: '/catalog', siteUrl: 'https://catalog.example', status: 200, ssr: false, categories: [{ slug: 'rails', name: 'Рельсы', description: 'Железнодорожные рельсы разных профилей', subcategories: [] }] }
-  const meta = getMetadata('/catalog?category=rails&page=2', data)
-  assert.equal(meta.canonical, 'https://catalog.example/catalog?category=rails&page=2')
+  const meta = getMetadata('/catalog/rails?page=2', data)
+  assert.equal(meta.canonical, 'https://catalog.example/catalog/rails?page=2')
   assert.match(meta.title, /страница 2/)
+  assert.match(meta.robots, /^index/)
   assert.match(getMetadata('/catalog?search=rails', data).robots, /noindex/)
+  for (const url of ['/catalog/rails?search=Р65', '/catalog/rails?sort=newest', '/catalog/rails?gost=7173', '/catalog/rails?attribute_type=r65', '/catalog/rails?category=rails']) {
+    const variant = getMetadata(url, data)
+    assert.match(variant.robots, /noindex/, url)
+    assert.equal(variant.canonical, 'https://catalog.example/catalog/rails', url)
+  }
+})
+test('sections live on static addresses; old ?category= addresses are moved there with a 301', () => {
+  assert.equal(catalogPath(), '/catalog')
+  assert.equal(catalogPath('rails'), '/catalog/rails')
+  assert.equal(catalogPath('rails', 'r-65'), '/catalog/rails/r-65')
+  assert.equal(catalogPath('', 'r-65'), '/catalog')
+  assert.deepEqual(catalogSelection('/catalog'), { categorySlug: undefined, subcategorySlug: undefined })
+  assert.deepEqual(catalogSelection('/catalog/rails'), { categorySlug: 'rails', subcategorySlug: undefined })
+  assert.deepEqual(catalogSelection('/catalog/rails/r-65'), { categorySlug: 'rails', subcategorySlug: 'r-65' })
+  for (const path of ['/catalog/rails/r-65/product/r65', '/catalog/rails/product/r65', '/catalogue', '/services/x', '/catalog/%E0'])
+    assert.equal(catalogSelection(path), null, path)
+  const legacy = (url) => { const parsed = new URL(url, 'https://x'); return legacyCatalogRedirect(parsed.pathname, parsed.searchParams) }
+  assert.equal(legacy('/catalog?category=rails'), '/catalog/rails')
+  assert.equal(legacy('/catalog?category=rails&subcategory=r-65'), '/catalog/rails/r-65')
+  assert.equal(legacy('/catalog?category=rails&subcategory=r-65&page=3&search=%D1%80'), '/catalog/rails/r-65?page=3&search=%D1%80')
+  assert.equal(legacy('/catalog?category=rails&subcategory='), '/catalog/rails')
+  for (const url of ['/catalog', '/catalog?search=x', '/catalog?category=', '/catalog/rails?category=bolts', '/about?category=rails'])
+    assert.equal(legacy(url), null, url)
+  const categories = [{ slug: 'rails', name: 'Рельсы', description: 'Описание', subcategories: [{ slug: 'r-65', name: 'Р65' }] }]
+  const meta = getMetadata('/catalog/rails/r-65', { url: '/catalog/rails/r-65', siteUrl: 'https://catalog.example', status: 200, ssr: true, categories })
+  assert.equal(meta.canonical, 'https://catalog.example/catalog/rails/r-65')
+  assert.match(meta.robots, /^index/)
+  assert.ok(isKnownPath('/catalog/rails') && isKnownPath('/catalog/rails/r-65'))
 })
 test('product descriptions keep their paragraphs', () => {
   assert.deepEqual(paragraphs('Первый абзац.\r\n\r\nВторой абзац.\n\n\nТретий'), ['Первый абзац.', 'Второй абзац.', 'Третий'])
@@ -141,10 +170,10 @@ test('meta from the table wins; templates in the same style cover what the table
   assert.equal(at('/services/novaya', { service: { ...service, slug: 'novaya' } }).title, 'Резка рельсов: услуга и расчёт стоимости | ИНВИА')
 
   const categories = [{ slug: 'zhd-shpaly', name: 'ЖД шпалы', description: 'Описание из базы', subcategories: [{ slug: 'derevyannye-shpaly', name: 'Деревянные шпалы' }, { slug: 'novaya', name: 'Новая категория' }] }]
-  assert.equal(at('/catalog?category=zhd-shpaly', { categories }).title, catalogMeta['zhd-shpaly'][0])
-  assert.equal(at('/catalog?category=zhd-shpaly&subcategory=derevyannye-shpaly', { categories }).description, catalogMeta['zhd-shpaly/derevyannye-shpaly'][1])
-  assert.equal(at('/catalog?category=zhd-shpaly&page=2', { categories }).title, catalogMeta['zhd-shpaly'][0].replace(/ \| ИНВИА$/, ' — страница 2 | ИНВИА'))
-  assert.equal(at('/catalog?category=zhd-shpaly&subcategory=novaya', { categories }).title, 'Новая категория: купить, цена | ИНВИА')
+  assert.equal(at('/catalog/zhd-shpaly', { categories }).title, catalogMeta['zhd-shpaly'][0])
+  assert.equal(at('/catalog/zhd-shpaly/derevyannye-shpaly', { categories }).description, catalogMeta['zhd-shpaly/derevyannye-shpaly'][1])
+  assert.equal(at('/catalog/zhd-shpaly?page=2', { categories }).title, catalogMeta['zhd-shpaly'][0].replace(/ \| ИНВИА$/, ' — страница 2 | ИНВИА'))
+  assert.equal(at('/catalog/zhd-shpaly/novaya', { categories }).title, 'Новая категория: купить, цена | ИНВИА')
 
   const slug = Object.keys(productMeta)[0]
   const product = { slug, title: 'Название из базы', images: [], categorySlug: 'x', description: 'Текст карточки' }
@@ -228,12 +257,12 @@ test('product page carries FAQPage with the same questions and answers as the vi
 
 test('catalog address with a section or category missing from the database is a 404, not an empty catalog', () => {
   const categories = [{ slug: 'rails', subcategories: [{ slug: 'r-65' }] }, { slug: 'bolts', subcategories: [] }]
-  const unknown = (query) => isUnknownCatalogSelection(new URLSearchParams(query), categories)
-  for (const query of ['', 'category=rails', 'category=rails&subcategory=r-65', 'category=bolts&page=2', 'category=&subcategory=', 'search=x&utm_source=ya'])
-    assert.equal(unknown(query), false, query)
-  for (const query of ['category=test', 'category=rails&subcategory=test', 'category=bolts&subcategory=r-65', 'subcategory=r-65', 'category=RAILS'])
-    assert.equal(unknown(query), true, query)
-  const meta = getMetadata('/catalog?category=test', { url: '/catalog?category=test', siteUrl: 'https://catalog.example', status: 404, ssr: true, categories })
+  const unknown = (path) => isUnknownCatalogSelection(catalogSelection(path), categories)
+  for (const path of ['/catalog', '/catalog/rails', '/catalog/rails/r-65', '/catalog/bolts'])
+    assert.equal(unknown(path), false, path)
+  for (const path of ['/catalog/test', '/catalog/rails/test', '/catalog/bolts/r-65', '/catalog/RAILS'])
+    assert.equal(unknown(path), true, path)
+  const meta = getMetadata('/catalog/test', { url: '/catalog/test', siteUrl: 'https://catalog.example', status: 404, ssr: true, categories })
   assert.equal(meta.title, 'Страница не найдена | ИНВИА')
   assert.match(meta.robots, /noindex/)
 })
