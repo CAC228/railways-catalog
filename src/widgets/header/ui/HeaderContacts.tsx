@@ -119,7 +119,7 @@ export function HeaderContacts({ onRequestCall }: { onRequestCall: () => void })
             onClick={() => setOpen((state) => (state === 'click' ? false : 'click'))}
             className="inline-flex h-6 w-6 items-center justify-center rounded text-primary transition-colors hover:bg-primary/10"
           >
-            <FiChevronDown className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+            <FiChevronDown strokeWidth={3.5} className={`h-5 w-5 transition-transform ${open ? 'rotate-180' : ''}`} />
           </button>
         </div>
         {open && (
