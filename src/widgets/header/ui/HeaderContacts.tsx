@@ -132,7 +132,7 @@ export function HeaderContacts({ onRequestCall }: { onRequestCall: () => void })
                 <MessengerLinks compact />
               </div>
               <div className="my-4 border-t border-border" />
-              {/* Пока городского нет, на его месте пусто — того же размера. */}
+              {/* Если городского нет, на его месте пусто — того же размера. */}
               {PHONE_CITY ? (
                 <>
                   <PanelLabel>Городской</PanelLabel>

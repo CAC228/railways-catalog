@@ -25,7 +25,7 @@ const CONTACTS = [
     id: 'phone-1',
     icon: FiPhone,
     title: 'Телефон',
-    // Пока городского нет, карточка невидима, но место в сетке за ней.
+    // Если городского нет, карточка невидима, но место в сетке за ней.
     value: PHONE_CITY || PHONE_MOBILE,
     empty: !PHONE_CITY,
     href: PHONE_CITY ? tel(PHONE_CITY) : undefined,

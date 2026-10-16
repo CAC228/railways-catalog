@@ -283,7 +283,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
 
             <div className="mt-auto border-t border-border pt-5">
               <div className="mb-3"><MessengerLinks /></div>
-              {/* Пока городского нет, на его месте пусто — того же размера. */}
+              {/* Если городского нет, на его месте пусто — того же размера. */}
               {PHONE_CITY ? (
                 <PhoneRow phone={PHONE_CITY} href={tel(PHONE_CITY)} note="Отдел продаж" />
               ) : (

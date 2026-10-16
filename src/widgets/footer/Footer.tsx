@@ -58,7 +58,7 @@ export function Footer() {
           <div>
             <h2 className="mb-4 text-base font-bold">Контакты</h2>
             <div className="space-y-2 text-sm">
-              {/* Пока городского нет, на его месте пусто — того же размера. */}
+              {/* Если городского нет, на его месте пусто — того же размера. */}
               <div className={`flex items-center gap-2 ${PHONE_CITY ? '' : 'invisible'}`} aria-hidden={!PHONE_CITY || undefined}>
                 <CopyValue
                   state={phoneMain}

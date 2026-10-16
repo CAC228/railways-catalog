@@ -23,7 +23,7 @@ export function HomeContacts() {
           </p>
         </div>
         <div className="space-y-4">
-          {/* Пока городского нет, на его месте пусто — того же размера. */}
+          {/* Если городского нет, на его месте пусто — того же размера. */}
           <div className={`flex items-center gap-3 text-2xl font-bold tracking-tight sm:text-3xl ${PHONE_CITY ? '' : 'invisible'}`} aria-hidden={!PHONE_CITY || undefined}>
             <a
               href={PHONE_CITY ? tel(PHONE_CITY) : undefined}
