@@ -1,5 +1,6 @@
-import { useSearchParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
 import { useCatalog } from '../model/use-catalog'
+import { catalogPath } from '@/shared/seo/route-data'
 import {
   ProductFilter,
   type FilterState,
@@ -14,7 +15,7 @@ import { CatalogToolbar } from './CatalogToolbar'
 
 export function CatalogPage() {
   const [params] = useSearchParams()
-  const category = params.get('category') ?? ''
+  const { categorySlug: category = '' } = useParams()
   const {
     products,
     categories,
@@ -35,7 +36,7 @@ export function CatalogPage() {
           {
             label: currentCategory.name,
             href: currentSubcategory
-              ? `/catalog?category=${currentCategory.slug}`
+              ? catalogPath(currentCategory.slug)
               : undefined,
           },
         ]
@@ -58,12 +59,12 @@ export function CatalogPage() {
   const searchAll = new URLSearchParams(params)
   for (const key of Array.from(searchAll.keys()))
     if (
-      ['category', 'subcategory', 'page'].includes(key) ||
+      key === 'page' ||
       key.startsWith('attribute_')
     )
       searchAll.delete(key)
   const searchAllHref =
-    filterValue.search && (category || params.get('subcategory'))
+    filterValue.search && category
       ? `/catalog?${searchAll}`
       : undefined
   const shown =

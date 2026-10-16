@@ -1,24 +1,21 @@
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { Link, useParams, useSearchParams } from 'react-router'
 import { FiChevronDown } from 'react-icons/fi'
 import type { Category } from '@/entities/category'
+import { catalogPath } from '@/shared/seo/route-data'
 
 export function CatalogCategories({ categories }: { categories: Category[] }) {
   const [params] = useSearchParams()
-  const currentCategory = params.get('category') ?? ''
-  const currentSubcategory = params.get('subcategory') ?? ''
+  const { categorySlug: currentCategory = '', subcategorySlug: currentSubcategory = '' } = useParams()
   const [open, setOpen] = useState(false)
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+  // Раздел — в пути; поиск и общие фильтры переносим, страницу и фильтры раздела — нет.
   const categoryHref = (category = '', subcategory = '') => {
     const next = new URLSearchParams(params)
     next.delete('page')
     for (const key of Array.from(next.keys()))
       if (key.startsWith('attribute_')) next.delete(key)
-    if (category) next.set('category', category)
-    else next.delete('category')
-    if (subcategory) next.set('subcategory', subcategory)
-    else next.delete('subcategory')
-    return `/catalog${next.size ? `?${next}` : ''}`
+    return `${catalogPath(category, subcategory)}${next.size ? `?${next}` : ''}`
   }
   return (
     <aside

@@ -9,6 +9,7 @@ import { useCategories } from '@/entities/category/model/hooks/useCategories'
 import { Button } from '@/shared/ui/Button'
 import { RequestFormModal } from '@/shared/ui/RequestFormModal'
 import { openCookieSettings } from '@/shared/privacy/cookie-consent'
+import { catalogPath } from '@/shared/seo/route-data'
 const companyLinks = [
   ['Услуги', '/services'],
   ['Доставка', '/delivery'],
@@ -123,7 +124,7 @@ export function Footer() {
               ) : (
                 categories.map((category) => (
                   <li key={category.slug}>
-                    <Link to={`/catalog?category=${category.slug}`}>
+                    <Link to={catalogPath(category.slug)}>
                       {category.name}
                     </Link>
                   </li>

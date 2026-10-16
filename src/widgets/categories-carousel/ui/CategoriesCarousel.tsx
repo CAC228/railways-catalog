@@ -5,6 +5,7 @@ import { FiArrowUpRight } from 'react-icons/fi'
 import { useCategoriesCarousel } from '../model/use-categories-carousel'
 import { CatalogImage } from '@/shared/ui/CatalogImage'
 import { CarouselArrows } from '@/shared/ui/CarouselArrows'
+import { catalogPath } from '@/shared/seo/route-data'
 
 const slideClassName =
   'min-w-0 flex-[0_0_85%] pl-4 sm:flex-[0_0_50%] lg:flex-[0_0_33.333333%] xl:flex-[0_0_25%]'
@@ -91,7 +92,7 @@ export function CategoriesCarousel() {
                 {categories.map((category) => (
                   <li key={category.slug} className={slideClassName}>
                     <Link
-                      to={`/catalog?category=${category.slug}`}
+                      to={catalogPath(category.slug)}
                       className="group flex h-full flex-col overflow-hidden rounded-lg border border-border transition-colors duration-200 hover:border-accent focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
                     >
                       <div className="aspect-[3/2] shrink-0 overflow-hidden border-b border-border bg-muted p-3">
