@@ -47,7 +47,7 @@ test('product search text only overrides the search description, without truncat
   const data = { url, siteUrl: 'https://catalog.example', status: 200, ssr: true, product }
   const meta = getMetadata(url, data)
   assert.equal(meta.description, searchText)
-  assert.match(meta.socialDescription, /^Болт М22\. Материалы ВСП в каталоге ИНВИА/)
+  assert.match(meta.socialDescription, /^Болт М22\. Материалы ВСП в каталоге ПроРельс/)
   assert.ok(!meta.socialDescription.includes('Поставка крепежа'))
   assert.ok(!JSON.stringify(meta.jsonLd).includes('Поставка крепежа'))
   assert.equal(product.description, 'Описание на странице')
@@ -61,7 +61,7 @@ test('empty search text falls back to generated metadata and markup becomes plai
   for (const descriptionTags of [undefined, null, '', '  \n ', '<b></b>']) {
     const meta = getMetadata(url, { ...data, product: { ...product, descriptionTags } })
     assert.equal(meta.description, meta.socialDescription)
-    assert.match(meta.description, /^Болт М22\. Материалы ВСП в каталоге ИНВИА/)
+    assert.match(meta.description, /^Болт М22\. Материалы ВСП в каталоге ПроРельс/)
   }
   const meta = getMetadata(url, { ...data, product: { ...product, descriptionTags: '<b>М22</b> &quot;ГОСТ&quot; &amp; доставка<script>alert(1)</script>' } })
   assert.equal(meta.description, 'М22 "ГОСТ" & доставка')
@@ -167,20 +167,20 @@ test('meta from the table wins; templates in the same style cover what the table
   assert.deepEqual([at('/about').title, at('/about').description], pageMeta['/about'])
   const service = { slug: 'rezka-rels', title: 'Резка рельсов', description: 'Режем рельсы.' }
   assert.deepEqual([at('/services/rezka-rels', { service }).title, at('/services/rezka-rels', { service }).description], pageMeta['/services/rezka-rels'])
-  assert.equal(at('/services/novaya', { service: { ...service, slug: 'novaya' } }).title, 'Резка рельсов: услуга и расчёт стоимости | ИНВИА')
+  assert.equal(at('/services/novaya', { service: { ...service, slug: 'novaya' } }).title, 'Резка рельсов: услуга и расчёт стоимости | ПроРельс')
 
   const categories = [{ slug: 'zhd-shpaly', name: 'ЖД шпалы', description: 'Описание из базы', subcategories: [{ slug: 'derevyannye-shpaly', name: 'Деревянные шпалы' }, { slug: 'novaya', name: 'Новая категория' }] }]
   assert.equal(at('/catalog/zhd-shpaly', { categories }).title, catalogMeta['zhd-shpaly'][0])
   assert.equal(at('/catalog/zhd-shpaly/derevyannye-shpaly', { categories }).description, catalogMeta['zhd-shpaly/derevyannye-shpaly'][1])
-  assert.equal(at('/catalog/zhd-shpaly?page=2', { categories }).title, catalogMeta['zhd-shpaly'][0].replace(/ \| ИНВИА$/, ' — страница 2 | ИНВИА'))
-  assert.equal(at('/catalog/zhd-shpaly/novaya', { categories }).title, 'Новая категория: купить, цена | ИНВИА')
+  assert.equal(at('/catalog/zhd-shpaly?page=2', { categories }).title, catalogMeta['zhd-shpaly'][0].replace(/ \| ПроРельс$/, ' — страница 2 | ПроРельс'))
+  assert.equal(at('/catalog/zhd-shpaly/novaya', { categories }).title, 'Новая категория: купить, цена | ПроРельс')
 
   const slug = Object.keys(productMeta)[0]
   const product = { slug, title: 'Название из базы', images: [], categorySlug: 'x', description: 'Текст карточки' }
   const own = at(productPath(product), { product })
   assert.deepEqual([own.title, own.description, own.socialDescription], [...productMeta[slug], productMeta[slug][1]])
   const fresh = { ...product, slug: 'novyj-tovar', title: 'Новый товар' }
-  assert.equal(at(productPath(fresh), { product: fresh }).title, 'Новый товар: купить, цена | ИНВИА')
+  assert.equal(at(productPath(fresh), { product: fresh }).title, 'Новый товар: купить, цена | ПроРельс')
   assert.equal(at(productPath(product), { product: { ...product, descriptionTags: 'Своё SEO-описание' } }).description, 'Своё SEO-описание', 'the admin field wins over the table')
 })
 test('the table covers every public page and gives each page its own title', () => {
@@ -263,6 +263,6 @@ test('catalog address with a section or category missing from the database is a 
   for (const path of ['/catalog/test', '/catalog/rails/test', '/catalog/bolts/r-65', '/catalog/RAILS'])
     assert.equal(unknown(path), true, path)
   const meta = getMetadata('/catalog/test', { url: '/catalog/test', siteUrl: 'https://catalog.example', status: 404, ssr: true, categories })
-  assert.equal(meta.title, 'Страница не найдена | ИНВИА')
+  assert.equal(meta.title, 'Страница не найдена | ПроРельс')
   assert.match(meta.robots, /noindex/)
 })
