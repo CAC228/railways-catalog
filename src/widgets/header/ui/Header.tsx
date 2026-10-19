@@ -101,15 +101,15 @@ export function Header() {
         <div className="header-main flex items-center gap-3 xl:gap-5">
           <Link
             to="/"
-            aria-label="ИНВИА — главная"
+            aria-label="ПроРельс — главная"
             className="shrink-0 rounded px-1 py-1"
           >
-            {/* ?v= — версия файла: адрес /logo.png тот же, что у прежнего логотипа, и без неё браузеры
-                показывают старую картинку из своей памяти. Меняется логотип — меняется и v. */}
-            {/* Фон у логотипа прозрачный: на белой шапке — обычный, на тёмной
-                при прокрутке — светлый (переключает index.css по .is-scrolled). */}
-            <img src="/logo.png?v=invia-2026-10-09" alt="ИНВИА" className="header-logo-light w-25 xl:w-28" />
-            <img src="/logo-light.png?v=invia-2026-10-09" alt="ИНВИА" className="header-logo-dark w-25 xl:w-28" />
+            {/* Логотип ПроРельс — вектор из файлов дизайнера («Вектор цветной 1.1» и «2.1»), ~8 КБ.
+                Новая картинка — новое имя файла: старую по прежнему адресу браузеры держат в своей памяти. */}
+            {/* Фон у логотипа прозрачный: на белой шапке — тёмные буквы, на тёмной
+                при прокрутке — белые (переключает index.css по .is-scrolled). */}
+            <img src="/logo-prorels.svg" alt="ПроРельс" width={368} height={82} className="header-logo-light h-auto w-[140px] xl:w-[180px]" />
+            <img src="/logo-prorels-light.svg" alt="ПроРельс" width={368} height={82} className="header-logo-dark h-auto w-[140px] xl:w-[180px]" />
           </Link>
           {/* «Каталог» и «Заказать звонок» — с 1024 px: на 17-дюймовом мониторе
               с масштабом 125 % окно уже 1280 px, а кнопки там нужны. Меню

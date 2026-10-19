@@ -31,10 +31,10 @@ export function Footer() {
           <div>
             <Link
               to="/"
-              aria-label="ИНВИА — главная"
+              aria-label="ПроРельс — главная"
               className="mb-5 inline-flex rounded"
             >
-              <img src="/logo-light.png?v=invia-2026-10-09" alt="ИНВИА" className="w-28" />
+              <img src="/logo-prorels-light.svg" alt="ПроРельс" width={368} height={82} className="h-auto w-[200px]" />
             </Link>
             <p className="footer-muted max-w-xs text-sm leading-relaxed">
               Поставки железнодорожных материалов по России и СНГ.
