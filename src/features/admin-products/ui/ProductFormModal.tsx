@@ -566,20 +566,20 @@ function ProductFormModalContent({
 
         <div>
           <label htmlFor={descriptionTagsId} className="mb-2 block text-sm font-medium text-foreground">
-            Тэги для поиска
+            Слова для поиска по сайту
           </label>
           <textarea
             id={descriptionTagsId}
             value={descriptionTags}
             onChange={(e) => setDescriptionTags(e.target.value)}
             aria-describedby={`${descriptionTagsId}-hint`}
-            placeholder="Описание товара для поисковых систем"
+            placeholder="р18 р-18 p18 релсы клема кастыль"
             disabled={isSubmitting}
             rows={3}
             className="block min-h-28 w-full resize-y rounded-lg border border-border bg-muted/50 p-3 text-base leading-6 text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
           />
           <p id={`${descriptionTagsId}-hint`} className="mt-2 text-xs leading-5 text-muted-foreground">
-            Не отображается в карточке товара. Если оставить поле пустым, описание для поиска сформируется автоматически.
+            Только для поиска по сайту: в карточке не видно, в Яндекс и Google не уходит. Через пробел — варианты обозначений, ошибки, сленг. Каждое слово запроса ищется отдельно в названии, артикуле, ГОСТе и здесь.
           </p>
         </div>
 

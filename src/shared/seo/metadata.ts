@@ -26,7 +26,6 @@ export function getMetadata(urlValue: string, data: PageData, products: Record<s
   let noindex = data.status >= 400 || path === '/cart' || path.startsWith('/admin') || !isKnownPath(path)
   const jsonLd: Record<string, unknown>[] = []
   let image = `${data.siteUrl}/logo.png`
-  let searchDescription = ''
   if (path.startsWith('/admin')) [title, description] = ['Управление сайтом | ПроРельс', 'Вход в панель управления ПроРельс.']
   const selection = catalogSelection(path)
   if (selection) {
@@ -59,8 +58,7 @@ export function getMetadata(urlValue: string, data: PageData, products: Record<s
     const productTitle = plainText(product.title)
     const productText = plainText(product.description)
     ;[title, description] = products[product.slug] ?? [`${productTitle}: купить, цена | ПроРельс`, `${productTitle}. Материалы ВСП в каталоге ПроРельс. Цена по запросу, отгрузка от 48 часов, доставка по России и СНГ.`]
-    // «SEO-описание» из админки, если заполнено, важнее таблицы — так одну карточку можно поправить без выкатки.
-    searchDescription = plainText(product.descriptionTags)
+    // descriptionTags — слова для поиска по сайту (ошибки, сленг, «р18» к «Р-18»); в мета-теги их не пускаем.
     canonicalPath = productPath(product)
     if (product.images[0]) image = new URL(product.images[0], data.siteUrl).href
     // Хлебные крошки уже размечены microdata в Breadcrumbs — здесь только сам товар.
@@ -92,5 +90,5 @@ export function getMetadata(urlValue: string, data: PageData, products: Record<s
   if (data.status >= 500) title = 'Страница временно недоступна | ПроРельс'
   if (path === '/') jsonLd.push({ '@context': 'https://schema.org', ...company, url: data.siteUrl, logo: `${data.siteUrl}/logo.png`, telephone: [PHONE_CITY, PHONE_MOBILE].filter(Boolean), email: 'zakaz@prorelsa.ru' })
   const socialDescription = summary(description)
-  return { title, description: searchDescription || socialDescription, socialDescription, canonical: data.siteUrl + canonicalPath, robots: noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large', image, jsonLd }
+  return { title, description: socialDescription, socialDescription, canonical: data.siteUrl + canonicalPath, robots: noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large', image, jsonLd }
 }

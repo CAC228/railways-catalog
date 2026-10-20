@@ -40,31 +40,17 @@ test('public navigation clears noindex and stale service metadata', () => {
   assert.deepEqual(getMetadata('/about', data).jsonLd, [])
 })
 
-test('product search text only overrides the search description, without truncation', () => {
-  const searchText = 'Поставка крепежа М22 для железнодорожного пути. '.repeat(5).trim()
-  const product = { slug: 'bolt', title: 'Болт М22', gost: 'ГОСТ 16017', images: [], categorySlug: 'fasteners', description: 'Описание на странице', descriptionTags: searchText }
+test('words for site search never reach meta tags or structured data', () => {
+  const product = { slug: 'bolt', title: 'Болт М22', gost: 'ГОСТ 16017', images: [], categorySlug: 'fasteners', description: 'Описание на странице' }
   const url = productPath(product)
   const data = { url, siteUrl: 'https://catalog.example', status: 200, ssr: true, product }
-  const meta = getMetadata(url, data)
-  assert.equal(meta.description, searchText)
-  assert.match(meta.socialDescription, /^Болт М22\. Материалы ВСП в каталоге ПроРельс/)
-  assert.ok(!meta.socialDescription.includes('Поставка крепежа'))
-  assert.ok(!JSON.stringify(meta.jsonLd).includes('Поставка крепежа'))
-  assert.equal(product.description, 'Описание на странице')
-  assert.ok(!getMetadata('/about', { ...data, url: '/about' }).description.includes('Поставка крепежа'))
-})
-
-test('empty search text falls back to generated metadata and markup becomes plain text', () => {
-  const product = { slug: 'bolt', title: 'Болт М22', images: [], categorySlug: 'fasteners', description: 'Описание товара' }
-  const url = productPath(product)
-  const data = { url, siteUrl: 'https://catalog.example', status: 200, ssr: true, product }
-  for (const descriptionTags of [undefined, null, '', '  \n ', '<b></b>']) {
+  const plain = getMetadata(url, data)
+  for (const descriptionTags of [undefined, null, '', 'болд балт м-22 м22 крепеж', '<b>М22</b> &quot;ГОСТ&quot;']) {
     const meta = getMetadata(url, { ...data, product: { ...product, descriptionTags } })
-    assert.equal(meta.description, meta.socialDescription)
+    assert.deepEqual(meta, plain)
     assert.match(meta.description, /^Болт М22\. Материалы ВСП в каталоге ПроРельс/)
+    assert.ok(!JSON.stringify(meta).includes('болд'))
   }
-  const meta = getMetadata(url, { ...data, product: { ...product, descriptionTags: '<b>М22</b> &quot;ГОСТ&quot; &amp; доставка<script>alert(1)</script>' } })
-  assert.equal(meta.description, 'М22 "ГОСТ" & доставка')
 })
 test('category pagination has its own canonical; filter variants remain out of the index', () => {
   const data = { url: '/catalog', siteUrl: 'https://catalog.example', status: 200, ssr: false, categories: [{ slug: 'rails', name: 'Рельсы', description: 'Железнодорожные рельсы разных профилей', subcategories: [] }] }
@@ -181,7 +167,7 @@ test('meta from the table wins; templates in the same style cover what the table
   assert.deepEqual([own.title, own.description, own.socialDescription], [...productMeta[slug], productMeta[slug][1]])
   const fresh = { ...product, slug: 'novyj-tovar', title: 'Новый товар' }
   assert.equal(at(productPath(fresh), { product: fresh }).title, 'Новый товар: купить, цена | ПроРельс')
-  assert.equal(at(productPath(product), { product: { ...product, descriptionTags: 'Своё SEO-описание' } }).description, 'Своё SEO-описание', 'the admin field wins over the table')
+  assert.equal(at(productPath(product), { product: { ...product, descriptionTags: 'слова для поиска по сайту' } }).description, productMeta[slug][1], 'search words do not replace the table')
 })
 test('the table covers every public page and gives each page its own title', () => {
   for (const path of ['/', '/catalog', '/services', '/about', '/contacts', '/delivery', '/calculator', '/privacy']) assert.ok(pageMeta[path]?.[0] && pageMeta[path]?.[1], path)
