@@ -105,7 +105,7 @@ export default function ChatWidget() {
   }
   if (pathname.startsWith('/admin')) return null
   return (
-    <div className="chat-widget">
+    <div className={`chat-widget${open ? ' is-open' : ''}`}>
       <button
         ref={opener}
         className="chat-launcher"

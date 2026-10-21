@@ -314,6 +314,13 @@ input[type='number']::-webkit-inner-spin-button {
   }
 }
 @media (max-width: 359px) {
+  .site-header .header-main {
+    gap: 0.5rem;
+  }
+  .site-header .header-logo-light,
+  .site-header .header-logo-dark {
+    width: 120px;
+  }
   .hero-title {
     font-size: 1.75rem;
   }

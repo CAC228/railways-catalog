@@ -1,10 +1,14 @@
 .chat-widget {
+  --chat-edge: 24px;
   position: fixed;
   z-index: 45;
   right: 24px;
-  bottom: max(24px, env(safe-area-inset-bottom));
+  bottom: max(var(--chat-edge), env(safe-area-inset-bottom));
   color: hsl(var(--foreground));
   font-size: 14px;
+}
+.chat-widget:not(.is-open) {
+  bottom: max(var(--chat-edge), env(safe-area-inset-bottom), var(--cookie-banner-clearance, 0px));
 }
 .chat-launcher {
   display: flex;
@@ -467,8 +471,8 @@
 }
 @media (max-width: 767px) {
   .chat-widget {
+    --chat-edge: 14px;
     right: 14px;
-    bottom: max(86px, env(safe-area-inset-bottom));
   }
   .chat-launcher {
     width: 50px;
