@@ -109,7 +109,9 @@ export function CatalogList({
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                         <span>{product.sku}</span>
                         <span aria-hidden="true">·</span>
-                        <span>{getConditionLabel(product.condition)}</span>
+                        <span className={product.condition === 'new' ? 'font-medium text-success' : undefined}>
+                          {getConditionLabel(product.condition)}
+                        </span>
                         <span className="flex items-center gap-1.5">
                           <span
                             aria-hidden="true"
