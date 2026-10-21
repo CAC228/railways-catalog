@@ -1,14 +1,10 @@
-import { categoryApi, type Category } from '@/entities/category'
-import {
-  productApi,
-  type GetProductsParams,
-  type Product,
-} from '@/entities/product'
-import type { SortOption } from '@/entities/product/model/types'
+import { catalogQuery, productQueryString } from '@/shared/lib/catalog-query'
+import { type Category } from '@/entities/category'
+import { productApi, type Product } from '@/entities/product'
 import type { PaginationMeta } from '@/shared/api'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router'
-import { useCategoryData } from '@/shared/seo/page-context'
+import { useCategoryData, usePageData } from '@/shared/seo/page-context'
 
 type FilterCondition = 'new' | 'used' | 'service' | 'all'
 type FilterStock = 'all' | 'in-stock' | 'on-order'
@@ -34,123 +30,73 @@ export interface UseCatalogReturn {
 export function useCatalog(): UseCatalogReturn {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // Категории, которые сервер уже загрузил для /catalog: с ними H1, описание и хлебные крошки
-  // категории есть в исходном HTML, а первая отрисовка в браузере совпадает с серверной.
-  const { categories: preloadedCategories } = useCategoryData()
-  const [products, setProducts] = useState<Product[]>([])
-  const [categories, setCategories] = useState<Category[]>(preloadedCategories)
-  const [pagination, setPagination] = useState<PaginationMeta>({
+  const { categories } = useCategoryData()
+  const { catalog: preloaded, status } = usePageData()
+  const { categorySlug, subcategorySlug } = useParams()
+  const query = useMemo(
+    () => catalogQuery(searchParams, categorySlug, subcategorySlug),
+    [searchParams, categorySlug, subcategorySlug],
+  )
+  const key = productQueryString(query)
+  const [loaded, setLoaded] = useState(preloaded)
+  const [failure, setFailure] = useState<{
+    key: string
+    message: string
+  } | null>(null)
+  const current =
+    loaded?.key === key
+      ? loaded
+      : preloaded?.key === key
+        ? preloaded
+        : undefined
+  const error =
+    status >= 500
+      ? 'Каталог временно недоступен. Попробуйте позже.'
+      : failure?.key === key
+        ? failure.message
+        : null
+  const loading = !current && !error
+  const products = current?.response.items ?? []
+  const pagination: PaginationMeta = current?.response.pagination ?? {
     total: 0,
-    page: 1,
-    limit: 20,
+    page: query.page || 1,
+    limit: query.limit || 20,
     totalPages: 0,
     hasNextPage: false,
     hasPreviousPage: false,
-  })
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  // Раздел и категория — в пути (/catalog/<раздел>/<категория>), фильтры и страница — в параметрах.
-  const { categorySlug, subcategorySlug } = useParams()
-  const page = parseInt(searchParams.get('page') ?? '1', 10)
-  const limit = parseInt(searchParams.get('limit') ?? '20', 10)
-  const search = searchParams.get('search') ?? ''
-  const gost = searchParams.get('gost') ?? ''
-  const priceMin = searchParams.get('priceMin') ?? ''
-  const priceMax = searchParams.get('priceMax') ?? ''
-  const condition = (searchParams.get('condition') as FilterCondition) ?? 'all'
-  const sort = (searchParams.get('sort') as SortOption) ?? 'name'
-  const stock = (searchParams.get('stock') as FilterStock) ?? 'all'
-
-  const attributeFilters = useMemo(() => {
-    const attrs: Record<string, string> = {}
-    searchParams.forEach((value, key) => {
-      if (key.startsWith('attribute_')) {
-        const attrKey = key.replace('attribute_', '')
-        attrs[attrKey] = value
-      }
-    })
-    return attrs
-  }, [searchParams])
+  }
+  const search = query.search ?? ''
+  const gost = query.gost ?? ''
+  const priceMin = query.priceMin === undefined ? '' : String(query.priceMin)
+  const priceMax = query.priceMax === undefined ? '' : String(query.priceMax)
+  const condition = (query.condition ?? 'all') as FilterCondition
+  const stock = (query.stock ?? 'all') as FilterStock
+  const sort = query.sort ?? 'name'
+  const attributeFilters = query.attributes ?? {}
 
   useEffect(() => {
+    if (current) return
     let cancelled = false
-
-    async function loadCategories() {
-      try {
-        const response = await categoryApi.getAll({ limit: 100 })
+    productApi
+      .getAll(query)
+      .then((response) => {
         if (!cancelled) {
-          setCategories(response.items)
+          setLoaded({ key, response })
+          setFailure(null)
         }
-      } catch (err) {
-        console.error('Failed to load categories:', err)
-      }
-    }
-
-    loadCategories()
+      })
+      .catch(() => {
+        if (!cancelled)
+          setFailure({
+            key,
+            message:
+              'Не удалось загрузить товары. Обновите страницу или попробуйте позже.',
+          })
+      })
     return () => {
       cancelled = true
     }
-  }, [])
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function loadProducts() {
-      try {
-        setLoading(true)
-        setError(null)
-
-        const params: GetProductsParams = {
-          page,
-          limit,
-          category: categorySlug,
-          subcategory: subcategorySlug,
-          search: search || undefined,
-          gost: gost || undefined,
-          priceMin: priceMin === '' ? undefined : Number(priceMin),
-          priceMax: priceMax === '' ? undefined : Number(priceMax),
-          condition: condition !== 'all' ? condition : undefined,
-          stock: stock !== 'all' ? stock : undefined,
-          sort,
-          attributes: attributeFilters,
-        }
-
-        const response = await productApi.getAll(params)
-        if (!cancelled) {
-          setProducts(response.items)
-          setPagination(response.pagination)
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError('Ошибка загрузки продуктов')
-          console.error('Failed to load products:', err)
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
-    }
-
-    loadProducts()
-    return () => {
-      cancelled = true
-    }
-  }, [
-    page,
-    limit,
-    categorySlug,
-    subcategorySlug,
-    search,
-    gost,
-    priceMin,
-    priceMax,
-    condition,
-    stock,
-    sort,
-    attributeFilters,
-  ])
+  }, [key, query, current])
 
   const handleFilterChange = (nextFilters: FilterState) => {
     const params = new URLSearchParams(searchParams)

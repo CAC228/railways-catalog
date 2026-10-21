@@ -1,3 +1,4 @@
+import { productQueryString } from '@/shared/lib/catalog-query';
 import { baseApi, type PaginatedResponse } from '@/shared/api';
 import type {
   Product,
@@ -26,37 +27,7 @@ export interface ProductDetailed extends Product {
 
 export const productApi = {
   async getAll(params?: GetProductsParams): Promise<PaginatedResponse<Product>> {
-    const queryParams: Record<string, any> = {
-      page: params?.page,
-      limit: params?.limit,
-      categorySlug: params?.category,
-      subcategorySlug: params?.subcategory,
-      search: params?.search,
-      gost: params?.gost,
-      priceMin: params?.priceMin,
-      priceMax: params?.priceMax,
-      sort: params?.sort,
-      condition: params?.condition !== 'all' ? params?.condition : undefined,
-      stock: params?.stock !== 'all' ? params?.stock : undefined,
-    };
-
-    if (params?.attributes) {
-      Object.entries(params.attributes).forEach(([key, value]) => {
-        if (value && value !== 'all') {
-          queryParams[`attribute_${key}`] = value;
-        }
-      });
-    }
-
-    Object.keys(queryParams).forEach((key) => {
-      if (queryParams[key] === undefined) {
-        delete queryParams[key];
-      }
-    });
-
-    const { data } = await baseApi.get<PaginatedResponse<Product>>('/product', {
-      params: queryParams,
-    });
+    const { data } = await baseApi.get<PaginatedResponse<Product>>(`/product?${productQueryString(params)}`);
     return data;
   },
 

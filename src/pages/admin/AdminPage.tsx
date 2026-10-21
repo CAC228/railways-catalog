@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Route, Routes } from 'react-router'
 import { AdminLoginPage } from '@/entities/auth/ui/AdminLoginPage'
 import { AdminHeader } from '@/widgets/admin-header'
@@ -10,6 +10,7 @@ import { AdminServicesPage } from './services/AdminServicesPage'
 import { AdminRequestsPage } from './requests/AdminRequestsPage'
 import { AdminSettingsPage } from './settings/AdminSettingsPage'
 import { AdminDashboardPage as Dashboard } from './dashboard/AdminDashboardPage'
+const AdminChatsPage = lazy(() => import('./chats/AdminChatsPage').then(module => ({ default: module.AdminChatsPage })))
 
 export function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -37,6 +38,7 @@ export function AdminPage() {
           <Route path="/orders" element={<AdminOrdersPage />} />
           <Route path="/services" element={<AdminServicesPage />} />
           <Route path="/requests" element={<AdminRequestsPage />} />
+          <Route path="/chats" element={<Suspense fallback={<p className="p-8">Загружаем чаты…</p>}><AdminChatsPage /></Suspense>} />
           <Route path="/settings" element={<AdminSettingsPage />} />
         </Routes>
       </main>

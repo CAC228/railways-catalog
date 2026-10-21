@@ -1,6 +1,8 @@
 import type { Category } from '@/entities/category/model/types'
 import type { ProductDetailed } from '@/entities/product/api/product.api'
 import type { Service } from '@/entities/service/model/types'
+import type { Product } from '@/entities/product/model/types'
+import type { PaginatedResponse } from '@/shared/api'
 
 export type DetailRoute = { kind: 'product' | 'service'; slug: string }
 export type PageData = {
@@ -9,6 +11,7 @@ export type PageData = {
   status: number
   ssr: boolean
   categories?: Category[]
+  catalog?: { key: string; response: PaginatedResponse<Product> }
   product?: ProductDetailed
   service?: Service
 }

@@ -2,6 +2,8 @@ import vike from 'vike/fetch'
 import type { Server } from 'vike/types'
 import { apiOrigin, siteUrl } from './src/renderer/server-config'
 import { hostRedirect, publicRequestUrl } from './src/renderer/site-origin'
+import { attachChatUpgrade } from './src/renderer/chat-proxy'
+import type { Server as HttpServer } from 'node:http'
 
 export default {
   async fetch(request: Request) {
@@ -24,5 +26,8 @@ export default {
     const page = request.method === 'GET' || request.method === 'HEAD' ? new Request(publicRequestUrl(request.url, siteUrl), request) : request
     return vike.fetch(page)
   },
-  prod: { port: Number(process.env.PORT || 3000), hostname: process.env.HOST || '0.0.0.0' },
+  prod: {
+    port: Number(process.env.PORT || 3000), hostname: process.env.HOST || '0.0.0.0',
+    onReady(server) { if (server.node?.server) attachChatUpgrade(server.node.server as HttpServer, apiOrigin) },
+  },
 } satisfies Server

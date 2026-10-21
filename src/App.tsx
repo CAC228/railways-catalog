@@ -19,6 +19,7 @@ import { CalculatorPage } from './pages/calculator/CalculatorPage'
 import { CookieConsentBanner } from './widgets/cookie-consent/CookieConsentBanner'
 import { usePageData } from './shared/seo/page-context'
 import { legacyCatalogRedirect } from './shared/seo/route-data'
+import { ChatLauncher } from './features/chat/ChatLauncher'
 
 // Раздела или категории из адреса нет в базе — сервер ответил 404: показываем «Страница не найдена», а не весь каталог.
 // Старый адрес /catalog?category=… внутри приложения переводим на ЧПУ так же, как сервер (301).
@@ -77,6 +78,7 @@ export function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <CookieConsentBanner />
+      <ChatLauncher />
     </>
   )
 }

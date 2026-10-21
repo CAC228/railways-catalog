@@ -12,6 +12,7 @@ export function AdminSidebar() {
     { to: '/admin/products', label: 'Продукты', icon: FiBox },
     { to: '/admin/services', label: 'Услуги', icon: FiTool },
     { to: '/admin/requests', label: 'Заявки', icon: FiInbox },
+    { to: '/admin/chats', label: 'Чаты', icon: FiInbox },
     { to: '/admin/orders', label: 'Заказы', icon: FiShoppingCart },
     { to: '/admin/settings', label: 'Настройки', icon: FiSettings },
   ]

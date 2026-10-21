@@ -4,6 +4,7 @@ import { apiOrigins, siteUrl } from '@/renderer/server-config'
 import { fetchFromApi } from '@/renderer/api-fetch'
 import { catalogSelection, detailRoute, isKnownPath, isUnknownCatalogSelection, legacyCatalogRedirect, productPath, rendersOnServer, type PageData } from '@/shared/seo/route-data'
 import { movedProductSlug } from '@/shared/seo/product-slug-moves'
+import { catalogQuery, productQueryString } from '@/shared/lib/catalog-query'
 
 export async function data(pageContext: PageContextServer): Promise<PageData> {
   const url = new URL(pageContext.urlOriginal, siteUrl)
@@ -17,6 +18,10 @@ export async function data(pageContext: PageContextServer): Promise<PageData> {
   const categories = route || catalog
     ? fetchFromApi(apiOrigins, '/api/product-category?limit=100', 8000).then(async (response) => response.ok ? (await response.json()).items : undefined).catch(() => undefined)
     : Promise.resolve(undefined)
+  const catalogKey = catalog ? productQueryString(catalogQuery(url.searchParams, catalog.categorySlug, catalog.subcategorySlug)) : ''
+  const catalogProducts = catalog
+    ? fetchFromApi(apiOrigins, `/api/product?${catalogKey}`, 8000).then(async response => response.ok ? await response.json() : null).catch(() => null)
+    : Promise.resolve(null)
   if (route) {
     try {
       let response = await fetchFromApi(apiOrigins, `/api/${route.kind}/${encodeURIComponent(route.slug)}`, 8000)
@@ -32,8 +37,14 @@ export async function data(pageContext: PageContextServer): Promise<PageData> {
     } catch { result.status = 503 }
   }
   result.categories = await categories
-  // Без списка категорий (API не ответил) проверить адрес нечем — каталог открывается как раньше.
+  if (catalog && !result.categories) result.status = 503
   if (catalog && result.categories && isUnknownCatalogSelection(catalog, result.categories)) result.status = 404
+  if (catalog && result.status === 200) {
+    const value = await catalogProducts
+    if (!value || !Array.isArray(value.items) || !value.pagination) result.status = 503
+    else if (value.pagination.page > 1 && value.pagination.page > value.pagination.totalPages) result.status = 404
+    else result.catalog = { key: catalogKey, response: value }
+  }
   if (result.product) {
     const canonical = productPath(result.product)
     if (pathname !== canonical) throw redirect(canonical + url.search, 301)

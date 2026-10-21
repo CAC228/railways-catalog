@@ -73,3 +73,5 @@ htmlcov/
 
 
 !.env.example
+test-results/
+playwright-report/

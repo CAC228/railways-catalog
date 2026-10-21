@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from 'react-router'
+import { useLocation, useParams, useSearchParams } from 'react-router'
 import { useCatalog } from '../model/use-catalog'
 import { catalogPath } from '@/shared/seo/route-data'
 import {
@@ -15,6 +15,7 @@ import { CatalogToolbar } from './CatalogToolbar'
 
 export function CatalogPage() {
   const [params] = useSearchParams()
+  const { pathname } = useLocation()
   const { categorySlug: category = '' } = useParams()
   const {
     products,
@@ -181,6 +182,7 @@ export function CatalogPage() {
                   currentPage={pagination.page}
                   totalPages={pagination.totalPages}
                   onPageChange={handlePageChange}
+                  pageHref={(page) => { const next = new URLSearchParams(params); if (page === 1) next.delete('page'); else next.set('page', String(page)); return pathname + (next.size ? `?${next}` : '') }}
                 />
               </div>
             )}
