@@ -4,18 +4,17 @@ import { useLocation } from 'react-router'
 import { ChatThread } from './ChatThread'
 import {
   useChatConnection,
-  type Conversation,
   type Message,
 } from './chat-client'
+import { ChatSessionError, readChatSession, type ChatSession } from './chat-session'
 import './chat.css'
 
 const SESSION_KEY = 'prorels-chat-session-v1'
-type Session = { conversation: Conversation; token: string }
 
 export default function ChatWidget() {
   const { pathname } = useLocation()
   const [open, setOpen] = useState(false)
-  const [session, setSession] = useState<Session | null>(() => {
+  const [session, setSession] = useState<ChatSession | null>(() => {
     try {
       const stored = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null')
       return stored?.token && stored?.conversation?.id ? stored : null
@@ -66,6 +65,7 @@ export default function ChatWidget() {
       const base = import.meta.env.VITE_API_URL || '/api'
       const response = await fetch(`${base}/chat/session`, {
         method: 'POST',
+        signal: AbortSignal.timeout(15000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
@@ -74,13 +74,7 @@ export default function ChatWidget() {
           pageUrl: pathname,
         }),
       })
-      const result = await response.json()
-      if (!response.ok)
-        throw new Error(
-          typeof result.message === 'string'
-            ? result.message
-            : 'Не удалось начать чат. Попробуйте позже.',
-        )
+      const result = await readChatSession(response)
       try {
         localStorage.setItem(SESSION_KEY, JSON.stringify(result))
       } catch {
@@ -89,7 +83,9 @@ export default function ChatWidget() {
       setSession(result)
     } catch (failure) {
       setError(
-        failure instanceof Error ? failure.message : 'Не удалось начать чат',
+        failure instanceof ChatSessionError
+          ? failure.message
+          : 'Не удалось подключиться к чату. Проверьте соединение и попробуйте снова.',
       )
     } finally {
       setBusy(false)

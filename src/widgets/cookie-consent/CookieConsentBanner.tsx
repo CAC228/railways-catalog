@@ -35,7 +35,7 @@ export function CookieConsentBanner() {
   }, [ready, choice, pathname])
   if (!ready || pathname.startsWith('/admin') || choice) return null
   return (
-    <section ref={banner} aria-labelledby="cookie-consent-title" className="fixed inset-x-3 bottom-[max(.75rem,env(safe-area-inset-bottom))] z-40 mx-auto max-h-[calc(100dvh-6rem)] max-w-5xl overflow-y-auto rounded-xl border border-border bg-card p-4 text-foreground shadow-[0_8px_40px_rgb(28_31_34/0.18)] sm:inset-x-6 sm:bottom-[max(1.5rem,env(safe-area-inset-bottom))] sm:p-5">
+    <section ref={banner} aria-labelledby="cookie-consent-title" className="fixed inset-x-3 bottom-[max(.75rem,env(safe-area-inset-bottom))] z-40 mx-auto max-h-[calc(100%-1.5rem)] max-w-5xl overflow-y-auto rounded-xl border border-border bg-card p-4 text-foreground shadow-[0_8px_40px_rgb(28_31_34/0.18)] sm:inset-x-6 sm:bottom-[max(1.5rem,env(safe-area-inset-bottom))] sm:p-5">
       <div className="grid grid-cols-1 items-center gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-4">
         <div aria-hidden="true" className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-primary sm:flex"><FiShield className="h-5 w-5" /></div>
         <div className="min-w-0">

@@ -6,7 +6,7 @@ export default defineConfig({
   timeout: 45000,
   outputDir: './test-results',
   use: {
-    baseURL: process.env.CHAT_TEST_FRONTEND_URL || 'http://127.0.0.1:4190',
+    baseURL: process.env.CHAT_TEST_FRONTEND_URL || 'http://127.0.0.1:4173',
     channel: process.env.PLAYWRIGHT_CHANNEL,
     headless: true,
     screenshot: 'only-on-failure',
